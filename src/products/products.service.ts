@@ -5,20 +5,41 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Products } from './schema/products.schema';
 import { Model } from 'mongoose';
 import { ProductQueryDto } from './dto/product-query.dto';
+import { AwsS3Service } from 'src/aws-s3/aws-s3.service';
 
 @Injectable()
 export class ProductsService {
-constructor(  @InjectModel(Products.name) private productModel: Model<Products>, ) {}
-  create({category, name, quantity, price, isDiscounted}: CreateProductDto) {
+constructor( 
+    private awsS3Service: AwsS3Service,
+   @InjectModel(Products.name) private productModel: Model<Products>
+   ) {}
+  async create({category, name, quantity, price, isDiscounted}: CreateProductDto, images: Express.Multer.File[]) {
      if (!category || !name || !quantity || !price || !isDiscounted)
       throw new HttpException('all fild is required', HttpStatus.BAD_REQUEST);
+
+       let imageUrls: string[] = [];
+        if (images && images.length > 0) {
+      try {
+        const uploadPromises = images.map(image => 
+          this.awsS3Service.uploadFile(image.originalname, image.buffer, image.mimetype)
+        );
+        imageUrls = await Promise.all(uploadPromises);
+      } catch (error) {
+        throw new HttpException(
+          'Failed to upload images', 
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      }
+    }
+
+  
 
     const newExpense = this.productModel.create({
       category,
       name,
       quantity,
-      price
-      
+      price,
+      images: imageUrls,
     });
     return newExpense;
   }

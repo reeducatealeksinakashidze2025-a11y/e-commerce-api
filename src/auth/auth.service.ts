@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { SingUpDto } from './dto/sing-up.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -44,20 +44,20 @@ export class AuthService {
       .select('+password');
     //   .select('+password');
 
-    if (!existUser) throw new BadRequestException('invalid Credentials');
+    if (!existUser) throw new UnauthorizedException('invalid Credentials');
 
     const isPassEqual = await bcrypt.compare(
       singInDto.password,
       existUser.password,
     );
-    if (!isPassEqual) throw new BadRequestException('invalid Credentials');
+    if (!isPassEqual) throw new UnauthorizedException('invalid Credentials');
 
     const payload = {
       userId: existUser._id,
       role: existUser.role
     }
     var token = await this.jwtService.sign(payload, { expiresIn: '1h' })
-    return {token};
+    return {value:token};
   }
 
 }

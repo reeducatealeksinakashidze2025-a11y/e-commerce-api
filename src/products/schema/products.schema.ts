@@ -34,6 +34,10 @@ export class Products {
     required: true,
   })
   price: number;
-
+@Prop({
+    type: [String],
+    default: [],
+  })
+  images: string[];
 }
 export const productSchema = SchemaFactory.createForClass(Products);
