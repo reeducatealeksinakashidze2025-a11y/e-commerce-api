@@ -6,8 +6,9 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
-import { AwsS3Service } from './aws-s3/aws-s3.service';
 import { AwsS3Module } from './aws-s3/aws-s3.module';
+import { OrdersModule } from './orders/orders.module';
+import { CartsModule } from './carts/carts.module';
 
 @Module({
   imports: [
@@ -18,7 +19,9 @@ import { AwsS3Module } from './aws-s3/aws-s3.module';
       isGlobal:true
     }),
    MongooseModule.forRoot( process.env.MONGO_URL!),
-   AwsS3Module
+   AwsS3Module,
+   OrdersModule,
+   CartsModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -13,8 +13,8 @@ constructor(
     private awsS3Service: AwsS3Service,
    @InjectModel(Products.name) private productModel: Model<Products>
    ) {}
-  async create({category, name, quantity, price, isDiscounted}: CreateProductDto, images: Express.Multer.File[]) {
-     if (!category || !name || !quantity || !price || !isDiscounted)
+  async create({category, name, quantity, price}: CreateProductDto, images: Express.Multer.File[]) {
+     if (!category || !name || !quantity || !price )
       throw new HttpException('all fild is required', HttpStatus.BAD_REQUEST);
 
        let imageUrls: string[] = [];
@@ -25,6 +25,7 @@ constructor(
         );
         imageUrls = await Promise.all(uploadPromises);
       } catch (error) {
+        console.error('Error uploading images to S3:', error);
         throw new HttpException(
           'Failed to upload images', 
           HttpStatus.INTERNAL_SERVER_ERROR
@@ -75,7 +76,6 @@ constructor(
       name,
       quantity,
       price,
-      isDiscounted,
       description,
     }: UpdateProductDto) {
     const existProduct = await this.productModel.findById(id);
