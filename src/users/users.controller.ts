@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { IsValidObjectId } from 'src/common/dto/is-valid-object-id.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT-auth')
@@ -19,6 +19,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Get user by ID' })
+  @ApiParam({ name: 'id', description: 'User ID', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'User found' })
   @ApiResponse({ status: 404, description: 'User not found' })
   @Get(':id')
@@ -27,6 +28,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Update user by ID' })
+  @ApiParam({ name: 'id', description: 'User ID', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'User updated successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
   @Patch(':id')
@@ -35,6 +37,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Delete user by ID' })
+  @ApiParam({ name: 'id', description: 'User ID', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'User deleted successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
   @Delete(':id')

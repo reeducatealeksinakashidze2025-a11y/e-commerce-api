@@ -4,7 +4,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderQueryDto } from './dto/order-query.dto';
 import { IsValidObjectId } from 'src/common/dto/is-valid-object-id.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 
 @ApiTags('Orders')
 @ApiBearerAuth('JWT-auth')
@@ -28,6 +28,7 @@ export class OrdersController {
   }
 
   @ApiOperation({ summary: 'Get order by ID' })
+  @ApiParam({ name: 'id', description: 'Order ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'Order found' })
   @ApiResponse({ status: 404, description: 'Order not found' })
   @Get(':id')
@@ -36,6 +37,7 @@ export class OrdersController {
   }
 
   @ApiOperation({ summary: 'Get all orders by user ID' })
+  @ApiParam({ name: 'userId', description: 'User ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'List of user orders' })
   @Get('user/:userId')
   findByUser(@Param('userId') userId: string, @Query() query: OrderQueryDto) {
@@ -43,6 +45,7 @@ export class OrdersController {
   }
 
   @ApiOperation({ summary: 'Update order by ID' })
+  @ApiParam({ name: 'id', description: 'Order ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'Order updated successfully' })
   @ApiResponse({ status: 404, description: 'Order not found' })
   @Patch(':id')
@@ -51,6 +54,7 @@ export class OrdersController {
   }
 
   @ApiOperation({ summary: 'Delete order by ID' })
+  @ApiParam({ name: 'id', description: 'Order ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'Order deleted successfully' })
   @ApiResponse({ status: 404, description: 'Order not found' })
   @Delete(':id')

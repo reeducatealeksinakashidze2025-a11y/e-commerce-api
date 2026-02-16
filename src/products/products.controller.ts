@@ -4,7 +4,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductQueryDto } from './dto/product-query.dto';
 import { IsValidObjectId } from 'src/common/dto/is-valid-object-id.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes, ApiBody, ApiParam } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Products')
@@ -50,6 +50,7 @@ export class ProductsController {
   }
   
   @ApiOperation({ summary: 'Get product by ID' })
+  @ApiParam({ name: 'id', description: 'Product ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'Product found' })
   @ApiResponse({ status: 404, description: 'Product not found' })
   @Get(':id')
@@ -58,6 +59,7 @@ export class ProductsController {
   }
 
   @ApiOperation({ summary: 'Update product by ID' })
+  @ApiParam({ name: 'id', description: 'Product ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'Product updated successfully' })
   @ApiResponse({ status: 404, description: 'Product not found' })
   @ApiBearerAuth('JWT-auth')
@@ -67,6 +69,7 @@ export class ProductsController {
   }
 
   @ApiOperation({ summary: 'Delete product by ID' })
+  @ApiParam({ name: 'id', description: 'Product ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'Product deleted successfully' })
   @ApiResponse({ status: 404, description: 'Product not found' })
   @ApiBearerAuth('JWT-auth')
