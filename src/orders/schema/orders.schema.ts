@@ -9,7 +9,7 @@ export class Order {
   userId: Types.ObjectId;
 
   @Prop([{
-    productId: { type: Types.ObjectId, ref: 'Product', required: true },
+    productId: { type: Types.ObjectId, ref: 'Products', required: true },
     quantity: { type: Number, required: true, min: 1 },
     price: { type: Number, required: true }
   }])

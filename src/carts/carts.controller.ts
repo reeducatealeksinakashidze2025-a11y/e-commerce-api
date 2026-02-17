@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { CartsService } from './carts.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import { IsAuthGuard } from 'src/guards/is-auth.guard';
 
 @ApiTags('Shopping Cart')
 @ApiBearerAuth('JWT-auth')
@@ -15,6 +16,7 @@ export class CartsController {
   @ApiParam({ name: 'userId', description: 'User ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 201, description: 'Item added to cart' })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
+  @UseGuards(IsAuthGuard)
   @Post(':userId')
   create( @Param('userId') userId: string,
     @Body() createCartDto:  CreateCartDto) {
@@ -24,6 +26,7 @@ export class CartsController {
   @ApiOperation({ summary: 'Get all items in user cart' })
   @ApiParam({ name: 'userId', description: 'User ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'List of cart items' })
+  @UseGuards(IsAuthGuard)
   @Get(':userId')
   findAll(@Param('userId') userId: string) {
     return this.cartsService.findAll(userId);
@@ -33,6 +36,7 @@ export class CartsController {
   @ApiParam({ name: 'id', description: 'Cart item ID', example: '1' })
   @ApiResponse({ status: 200, description: 'Cart item found' })
   @ApiResponse({ status: 404, description: 'Cart item not found' })
+  @UseGuards(IsAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.cartsService.findOne(+id);
@@ -43,6 +47,7 @@ export class CartsController {
   @ApiParam({ name: 'productId', description: 'Product ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'Cart item updated' })
   @ApiResponse({ status: 404, description: 'Cart item not found' })
+  @UseGuards(IsAuthGuard)
   @Patch(':userId/:productId')
   update( @Param('userId') userId: string,
     @Param('productId') productId: string,
@@ -55,6 +60,7 @@ export class CartsController {
   @ApiParam({ name: 'productId', description: 'Product ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'Item removed from cart' })
   @ApiResponse({ status: 404, description: 'Cart item not found' })
+  @UseGuards(IsAuthGuard)
   @Delete(':userId/:productId')
   remove( @Param('userId') userId: string,
     @Param('productId') productId: string) {

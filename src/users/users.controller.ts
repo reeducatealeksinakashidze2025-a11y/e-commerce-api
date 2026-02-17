@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { IsValidObjectId } from 'src/common/dto/is-valid-object-id.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import { IsAuthGuard } from 'src/guards/is-auth.guard';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT-auth')
@@ -13,6 +14,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'List of users' })
+  @UseGuards(IsAuthGuard)
   @Get()
   findAll(@Query() query: PaginationDto) {
     return this.usersService.findAll(query);
@@ -22,6 +24,7 @@ export class UsersController {
   @ApiParam({ name: 'id', description: 'User ID', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'User found' })
   @ApiResponse({ status: 404, description: 'User not found' })
+  @UseGuards(IsAuthGuard)
   @Get(':id')
   findOne(@Param() { id }: IsValidObjectId) {
     return this.usersService.findOne(+id);
@@ -31,6 +34,7 @@ export class UsersController {
   @ApiParam({ name: 'id', description: 'User ID', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'User updated successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
+  @UseGuards(IsAuthGuard)
   @Patch(':id')
   update(@Param() { id }: IsValidObjectId, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
@@ -40,6 +44,7 @@ export class UsersController {
   @ApiParam({ name: 'id', description: 'User ID', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'User deleted successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
+  @UseGuards(IsAuthGuard)
   @Delete(':id')
   remove(@Param() { id }: IsValidObjectId) {
     return this.usersService.remove(+id);

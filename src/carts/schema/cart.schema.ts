@@ -9,7 +9,7 @@ export class Cart {
   userId: Types.ObjectId;
 
   @Prop([{
-    productId: { type: Types.ObjectId, ref: 'Product', required: true },
+    productId: { type: Types.ObjectId, ref: 'Products', required: true },
     quantity: { type: Number, required: true, min: 1, default: 1 },
     price: { type: Number, required: true },
     addedAt: { type: Date, default: Date.now }
@@ -30,5 +30,5 @@ export class Cart {
 
 export const CartSchema = SchemaFactory.createForClass(Cart);
 
-CartSchema.index({ userId: 1 });
-CartSchema.index({ 'items.productId': 1 });
+// CartSchema.index({ userId: 1 });
+// CartSchema.index({ 'items.productId': 1 });

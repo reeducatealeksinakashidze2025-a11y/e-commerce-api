@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderQueryDto } from './dto/order-query.dto';
 import { IsValidObjectId } from 'src/common/dto/is-valid-object-id.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import { IsAuthGuard } from 'src/guards/is-auth.guard';
 
 @ApiTags('Orders')
 @ApiBearerAuth('JWT-auth')
@@ -15,13 +16,29 @@ export class OrdersController {
   @ApiOperation({ summary: 'Create new order' })
   @ApiResponse({ status: 201, description: 'Order created successfully' })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
+  @UseGuards(IsAuthGuard)
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
     return this.ordersService.create(createOrderDto);
   }
 
+  @ApiOperation({ summary: 'Create order from user cart' })
+  @ApiResponse({ status: 201, description: 'Order created from cart' })
+  @ApiResponse({ status: 400, description: 'Invalid input or empty cart' })
+  @ApiParam({ name: 'userId', description: 'User ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
+  @UseGuards(IsAuthGuard)
+  @Post('from-cart/:userId')
+  async createFromCart(
+    @Param('userId') userId: string,
+    @Body() body: { shippingAddress?: any; paymentMethod?: string },
+  ) {
+    const { shippingAddress, paymentMethod } = body || {};
+    return this.ordersService.createOrderFromCart(userId, shippingAddress, paymentMethod);
+  }
+
   @ApiOperation({ summary: 'Get all orders with filters' })
   @ApiResponse({ status: 200, description: 'List of orders' })
+  @UseGuards(IsAuthGuard)
   @Get()
   findAll(@Query() query: OrderQueryDto) {
     return this.ordersService.findAll(query);
@@ -31,6 +48,7 @@ export class OrdersController {
   @ApiParam({ name: 'id', description: 'Order ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'Order found' })
   @ApiResponse({ status: 404, description: 'Order not found' })
+  @UseGuards(IsAuthGuard)
   @Get(':id')
   findOne(@Param() { id }: IsValidObjectId) {
     return this.ordersService.findOne(id);
@@ -39,6 +57,7 @@ export class OrdersController {
   @ApiOperation({ summary: 'Get all orders by user ID' })
   @ApiParam({ name: 'userId', description: 'User ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'List of user orders' })
+  @UseGuards(IsAuthGuard)
   @Get('user/:userId')
   findByUser(@Param('userId') userId: string, @Query() query: OrderQueryDto) {
     return this.ordersService.findByUser(userId, query);
@@ -48,6 +67,7 @@ export class OrdersController {
   @ApiParam({ name: 'id', description: 'Order ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'Order updated successfully' })
   @ApiResponse({ status: 404, description: 'Order not found' })
+  @UseGuards(IsAuthGuard)
   @Patch(':id')
   update(@Param() { id }: IsValidObjectId, @Body() updateOrderDto: UpdateOrderDto) {
     return this.ordersService.update(id, updateOrderDto);
@@ -57,6 +77,7 @@ export class OrdersController {
   @ApiParam({ name: 'id', description: 'Order ID (MongoDB ObjectId)', example: '507f1f77bcf86cd799439011' })
   @ApiResponse({ status: 200, description: 'Order deleted successfully' })
   @ApiResponse({ status: 404, description: 'Order not found' })
+  @UseGuards(IsAuthGuard)
   @Delete(':id')
   remove(@Param() { id }: IsValidObjectId) {
     return this.ordersService.remove(id);

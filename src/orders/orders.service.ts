@@ -14,7 +14,6 @@ export class OrdersService {
     private cartService: CartsService
   ) {}
   create(createOrderDto: CreateOrderDto) {
-    // Calculate total amount
     const totalAmount = createOrderDto.items.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
@@ -109,24 +108,29 @@ export class OrdersService {
       throw new NotFoundException(`Order with ID ${id} not found`);
     }
   }
-  // Create order from cart
   async createOrderFromCart(
-    userId: string, 
-    shippingAddress: any, 
-    paymentMethod: string
+    userId: string,
+    shippingAddress: any,
+    paymentMethod?: string,
   ): Promise<Order> {
     if (!Types.ObjectId.isValid(userId)) {
       throw new BadRequestException('Invalid user ID');
     }
 
-    // Get cart with populated products
     const cart = await this.cartService.findAll(userId);
 
     if (!cart || cart.items.length === 0) {
       throw new BadRequestException('Cart is empty');
     }
 
-    // Create order DTO from cart items
+    if (!shippingAddress) {
+      throw new BadRequestException('Shipping address is required');
+    }
+
+    if (!paymentMethod) {
+      throw new BadRequestException('Payment method is required');
+    }
+
     const orderDto: CreateOrderDto = {
       userId,
       items: cart.items.map(item => ({
@@ -138,10 +142,8 @@ export class OrdersService {
       paymentMethod
     };
 
-    // Create order
     const order = await this.create(orderDto);
 
-    // Clear cart after successful order
     await this.cartService.clearCart(userId);
 
     return order;
