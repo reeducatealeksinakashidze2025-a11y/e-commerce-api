@@ -27,7 +27,7 @@ export class UsersController {
   @UseGuards(IsAuthGuard)
   @Get(':id')
   findOne(@Param() { id }: IsValidObjectId) {
-    return this.usersService.findOne(+id);
+    return this.usersService.findOne(id);
   }
 
   @ApiOperation({ summary: 'Update user by ID' })
